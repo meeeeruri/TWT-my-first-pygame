@@ -34,10 +34,6 @@ while run:
     if keys[pygame.K_RIGHT] and x < screen_width - width:
         x += velocity
     if not(isJump): # condition when opject is not jumping
-        if keys[pygame.K_UP] and y > 0:
-            y -= velocity
-        if keys[pygame.K_DOWN] and y < screen_height - height:
-            y += velocity
         if keys[pygame.K_SPACE]:
             isJump = True
     ### jumping process
