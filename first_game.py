@@ -1,4 +1,3 @@
-from ast import walk
 import pygame
 
 pygame.init()
@@ -15,34 +14,45 @@ walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.ima
 bg = pygame.image.load('bg.jpg')
 char = pygame.image.load('standing.png')
 
+
+clock = pygame.time.Clock() # load time to set fps
+
 ### object property
 x = 50
-y = 400
-width = 40
-height = 60
-velocity = 10
+y = 425
+width = 64
+height = 64
+velocity = 5
 isJump = False
 jumpCount = 10
 left = False
 right = False
 walkCount = 0 # fram of walking count
 
+### draw the window
 def redrawGameWindow():
     global walkCount
-    win.blit(bg, (0.0)) # load background image
+    win.blit(bg, (0, 0)) # load background image
     
     if walkCount +1 >= 27: # calculate fram of walking image
         walkCount = 0
     if left:
-        win.blit(walkLeft[walkCount//3]) # load left walk image by fram (3 fram per image)
-    
+        win.blit(walkLeft[walkCount//3], (x, y)) # load left walk image by fram (3 fram per image)
+        walkCount += 1
+    elif right:
+        win.blit(walkRight[walkCount//3], (x, y))
+        walkCount += 1
+    else:
+        win.blit(char, (x, y))
+
 
     pygame.display.update() # publish the new picture to screen
 
 run = True
 
 while run:
-    pygame.time.delay(100) # interval, also refresh rate between check input
+    ### pygame.time.delay(50) # alternate interval, also refresh rate between check input
+    clock.tick(27) # set to 27 fps
 
     for event in pygame.event.get(): # check input
 
@@ -58,13 +68,17 @@ while run:
         x += velocity
         right = True
         left = False
-    else:
+    else: # if we doing nothing
         left = False
         right = False
         walkCount = 0
     if not(isJump): # condition when opject is not jumping
         if keys[pygame.K_SPACE]:
             isJump = True
+            right = False
+            left = False
+            walkCount = 0
+
     ### jumping process
     else:
         if jumpCount >= -10:
