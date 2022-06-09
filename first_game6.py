@@ -53,9 +53,6 @@ class player(object):
             else:
                 win.blit(walkRight[0], (self.x, self.y))
 
-
-
-
 class projectile(object):
     def __init__(self, x, y, radius, color, facing):
         self.x = x
@@ -68,12 +65,56 @@ class projectile(object):
     def draw(self, win):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius )
 
+class enemy(object):
+    walkRight = [pygame.image.load(os.path.join('images', 'R1E.png')), pygame.image.load(os.path.join('images', 'R2E.png')), pygame.image.load(os.path.join('images', 'R3E.png')), 
+            pygame.image.load(os.path.join('images', 'R4E.png')), pygame.image.load(os.path.join('images', 'R5E.png')), pygame.image.load(os.path.join('images', 'R6E.png')), 
+            pygame.image.load(os.path.join('images', 'R7E.png')), pygame.image.load(os.path.join('images', 'R8E.png')), pygame.image.load(os.path.join('images', 'R9E.png')),
+            pygame.image.load(os.path.join('images', 'R10E.png')), pygame.image.load(os.path.join('images', 'R11E.png'))]
+    walkLeft = [pygame.image.load(os.path.join('images', 'L1E.png')), pygame.image.load(os.path.join('images', 'L2E.png')), pygame.image.load(os.path.join('images', 'L3E.png')), 
+            pygame.image.load(os.path.join('images', 'L4E.png')), pygame.image.load(os.path.join('images', 'L5E.png')), pygame.image.load(os.path.join('images', 'L6E.png')), 
+            pygame.image.load(os.path.join('images', 'L7E.png')), pygame.image.load(os.path.join('images', 'L8E.png')), pygame.image.load(os.path.join('images', 'L9E.png')),
+            pygame.image.load(os.path.join('images', 'L10E.png')), pygame.image.load(os.path.join('images', 'L11E.png'))]
 
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end]
+        self.walkCount = 0
+        self.vel = 3
+
+    def draw(self, win):
+            self.move()
+            if self.walkCount + 1 > 33:  # 3 fram per image for total 11 images
+                self.walkCount = 0
+            if self.vel > 0:
+                win.blit(self.walkRight[self.walkCount // 3], (self.x, self.y))
+                self.walkCount += 1
+            else:
+                win.blit(self.walkLeft[self.walkCount // 3], (self.x, self.y))
+                self.walkCount += 1
+
+    def move(self):
+            if self.vel > 0:
+                if self.x + self.vel < self.path[1]:
+                    self.x += self.vel
+                else:
+                    self.vel = self.vel * -1 # reverse direction to left
+                    self.walkCount = 0 # reset image
+            else:
+                if self.x - self.vel > self.path[0]:
+                    self.x += self.vel
+                else:
+                    self.vel = self.vel * -1 # reverse direction to right
+                    self.walkCount = 0 # reset image
 
 ### draw the window
 def redrawGameWindow():
     win.blit(bg, (0, 0)) # load backgro    und image
     man.draw(win) # draw character
+    goblin.draw(win       )
     for bullet in bullets: # draw bullets
         bullet.draw(win)
     pygame.display.update() # publish the new picture to screen
@@ -81,6 +122,7 @@ def redrawGameWindow():
 
 ### main loop
 man = player(300, 410, 64, 64)
+goblin = enemy(100, 410, 64, 64, 450)
 bullets = []
 run = True
 
